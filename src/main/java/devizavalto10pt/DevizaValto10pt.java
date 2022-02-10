@@ -2,6 +2,8 @@ package devizavalto10pt;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -19,7 +21,12 @@ import org.xml.sax.SAXException;
 
 /**
  *
- * @author plosz
+ * @author Plósz Tamás
+ * 
+ * Az alkalmazás gombnyomásra betölti a https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml helyen
+ * található XML állományban lévő valutákat és annak aktuális árfolyamát.
+ * A felhasználó megadhatja, hogy mennyi valutát szeretne váltani, majd a "Váltás" nyomógombbal kiszámoljuk
+ * és megjelenítjuk a forintba átváltott összeget.
  */
 public class DevizaValto10pt extends javax.swing.JFrame implements ActionListener {
     private static final String URLcim = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
@@ -30,17 +37,37 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
      * Létrehozzuk az új DevizaValto10pt formot
      */
     public DevizaValto10pt() {
+/**
+ * Inicializáljuk a komponenseket.
+ */
         initComponents();
+/**
+ * Letiltjuk a mezőket.
+ */
         EnableItems(false);
+/**
+ * Beleírjuk az URL címet a mezőbe.
+ */
         jTextField1.setText(URLcim);
+/**
+ * A mennyi valutát szeretne váltani mezőhöz adunk egy olyan listenert-t, amely csak számokat fogad el.
+ */
+        mennyitValt.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent evt) {
+                if (!Character.isDigit(evt.getKeyChar())) {
+                    evt.consume();
+                }
+            }
+        });
     }
+
 
 /**
  * Engedélyezzük/letiltjuk a mezőket.
  */
     public void EnableItems(boolean milegyen) {
         jComboBox1.setEnabled(milegyen);
-        mennyiFt.setEnabled(milegyen);
+        mennyitValt.setEnabled(milegyen);
         jButtonValtas.setEnabled(milegyen);
         osszegFt.setEnabled(milegyen);
         }
@@ -57,7 +84,9 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
         try {
             dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             DocumentBuilder db = dbf.newDocumentBuilder();
-           
+     
+           new CertificatValidator();
+
             Document doc = db.parse(new URL(URLcim).openStream());
 
             doc.getDocumentElement().normalize();
@@ -103,7 +132,7 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
 
         jTextField1 = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
-        mennyiFt = new javax.swing.JTextField();
+        mennyitValt = new javax.swing.JTextField();
         jComboBox1 = new javax.swing.JComboBox<>();
         jButtonValtas = new javax.swing.JButton();
         osszegFt = new javax.swing.JTextField();
@@ -124,7 +153,8 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
             }
         });
 
-        mennyiFt.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        mennyitValt.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        mennyitValt.setActionCommand("<Not Set>");
 
         jComboBox1.setEnabled(false);
         jComboBox1.addActionListener(new java.awt.event.ActionListener() {
@@ -158,7 +188,7 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(mennyiFt, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(mennyitValt, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonValtas)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -183,7 +213,7 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(mennyiFt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(mennyitValt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jButtonValtas)
                         .addComponent(osszegFt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -203,14 +233,20 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
     private void jButtonValtasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonValtasActionPerformed
         // TODO add your handling code here:
         Double ennyiFt;
-
-        ennyiFt = (Double.valueOf(mennyiFt.getText()) / currencies.get(jComboBox1.getSelectedItem()).doubleValue() ) * currencies.get("HUF");
-        osszegFt.setText(df.format(ennyiFt).toString());
-
+/**
+ * Amennyiben nem adott meg váltando összeget, akkor nem számolunk.
+ */
+        if ( !mennyitValt.getText().isEmpty() ) {
+            ennyiFt = (Integer.valueOf(mennyitValt.getText()) / currencies.get(jComboBox1.getSelectedItem()).doubleValue() ) * currencies.get("HUF");
+            osszegFt.setText(df.format(ennyiFt).toString());
+        }
     }//GEN-LAST:event_jButtonValtasActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+/**
+ * A felhasználó megnyomta az "XML betöltés" gombot, akkor beolvassuk az URL címről az XML állományt.
+ */
         XMLBeOlvas();
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -250,6 +286,8 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
 
     }
 
+
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButtonValtas;
@@ -257,7 +295,7 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField mennyiFt;
+    private javax.swing.JTextField mennyitValt;
     private javax.swing.JTextField osszegFt;
     // End of variables declaration//GEN-END:variables
 
