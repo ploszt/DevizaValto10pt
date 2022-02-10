@@ -31,7 +31,7 @@ import org.xml.sax.SAXException;
 public class DevizaValto10pt extends javax.swing.JFrame implements ActionListener {
     private static final String URLcim = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
     private static final DecimalFormat df = new DecimalFormat("0.00");
-    Map<String, Double> currencies = new HashMap<String, Double>();
+    Map<String, Double> arfolyamok = new HashMap<String, Double>();
 
     /**
      * Létrehozzuk az új DevizaValto10pt formot
@@ -73,11 +73,14 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
         }
    /**
     * Beolvassuk az XML-t erről az URL címről: https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml.
+    * Letároljuk az XML-ből beolvasott devizanemeket és árfolyamokat a arfolyamok map-ba, valamint feltöltjük a legördülő
+    * dobozkába a devizanemeket, hogy majd azokból választhasson a felhasználó.
     */
     public void XMLBeOlvas() {
-    
-        currencies.clear();
+        arfolyamok.clear();
         jComboBox1.removeAllItems();
+        mennyitValt.setText("");
+        osszegFt.setText("");
  
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -95,14 +98,13 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Element elem = (Element) nodeList.item(i);
                 if (elem.getAttribute("currency") != null && !elem.getAttribute("currency").isEmpty()) {
-                    currencies.put(elem.getAttribute("currency"), Double.valueOf(elem.getAttribute("rate")));
-
+                    arfolyamok.put(elem.getAttribute("currency"), Double.valueOf(elem.getAttribute("rate")));
                 }
             }
 /**
- * Betöltjük a currencies Map-ól az XML-ből beolvasott devizanemeket a ComboBox-ba.
+ * Betöltjük az arfolyamok Map-ból az XML-ből beolvasott devizanemeket a legördülő dobozkába.
  */
-        currencies.keySet().forEach(key -> {
+        arfolyamok.keySet().forEach(key -> {
         jComboBox1.addItem(key);
             });
 /**
@@ -112,15 +114,14 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
             java.util.logging.Logger.getLogger(DevizaValto10pt.class.getName()).log(java.util.logging.Level.SEVERE, null, e);
         }
 
-        if (!currencies.isEmpty()) {
+        if (!arfolyamok.isEmpty()) {
             EnableItems(true);
         }
-            else {
+        else {
             System.out.println("Hiba történt a betöltéskor! Próbálja újra.");
             EnableItems(false);
         }
-    
-    }
+     }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -143,9 +144,11 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
         setTitle("Deviza Váltó 1.0 (c) Plósz Tamás");
 
         jTextField1.setEditable(false);
+        jTextField1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jTextField1.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
         jTextField1.setToolTipText("");
 
+        jButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jButton1.setText("XML betöltés");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -153,16 +156,14 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
             }
         });
 
+        mennyitValt.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         mennyitValt.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
         mennyitValt.setActionCommand("<Not Set>");
 
+        jComboBox1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jComboBox1.setEnabled(false);
-        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox1ActionPerformed(evt);
-            }
-        });
 
+        jButtonValtas.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jButtonValtas.setText("Váltás");
         jButtonValtas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -170,6 +171,7 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
             }
         });
 
+        osszegFt.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         osszegFt.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
@@ -183,25 +185,28 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(67, 67, 67)
+                .addGap(58, 58, 58)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(mennyitValt, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonValtas)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jTextField1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 357, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(osszegFt, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel2))
+                        .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(120, 120, 120))
+                .addGap(67, 67, 67))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -219,16 +224,11 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
                         .addComponent(osszegFt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel2))
                     .addComponent(jLabel1))
-                .addContainerGap(227, Short.MAX_VALUE))
+                .addContainerGap(174, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
-        
-            // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox1ActionPerformed
 
     private void jButtonValtasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonValtasActionPerformed
         // TODO add your handling code here:
@@ -237,7 +237,7 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
  * Amennyiben nem adott meg váltando összeget, akkor nem számolunk.
  */
         if ( !mennyitValt.getText().isEmpty() ) {
-            ennyiFt = (Integer.valueOf(mennyitValt.getText()) / currencies.get(jComboBox1.getSelectedItem()).doubleValue() ) * currencies.get("HUF");
+            ennyiFt = (Integer.valueOf(mennyitValt.getText()) / arfolyamok.get(jComboBox1.getSelectedItem()).doubleValue() ) * arfolyamok.get("HUF");
             osszegFt.setText(df.format(ennyiFt).toString());
         }
     }//GEN-LAST:event_jButtonValtasActionPerformed
@@ -245,7 +245,7 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
 /**
- * A felhasználó megnyomta az "XML betöltés" gombot, akkor beolvassuk az URL címről az XML állományt.
+ * A felhasználó megnyomta az "XML betöltés" gombot, ezért beolvassuk az URL címről az XML állományt.
  */
         XMLBeOlvas();
     }//GEN-LAST:event_jButton1ActionPerformed
