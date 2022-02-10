@@ -18,7 +18,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-
 /**
  *
  * @author Plósz Tamás
@@ -34,7 +33,7 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
     Map<String, Double> arfolyamok = new HashMap<String, Double>();
 
     /**
-     * Létrehozzuk az új DevizaValto10pt formot
+     * Létrehozzuk az új DevizaValto10pt formot.
      */
     public DevizaValto10pt() {
 /**
@@ -63,7 +62,7 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
 
 
 /**
- * Engedélyezzük/letiltjuk a mezőket.
+ * Engedélyezzük / letiltjuk a mezőket.
  */
     public void EnableItems(boolean milegyen) {
         jComboBox1.setEnabled(milegyen);
@@ -73,22 +72,40 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
         }
    /**
     * Beolvassuk az XML-t erről az URL címről: https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml.
-    * Letároljuk az XML-ből beolvasott devizanemeket és árfolyamokat a arfolyamok map-ba, valamint feltöltjük a legördülő
+    * Letároljuk az XML-ből beolvasott devizanemeket és árfolyamokat a arfolyamok Map-ba, valamint feltöltjük a legördülő
     * dobozkába a devizanemeket, hogy majd azokból választhasson a felhasználó.
     */
     public void XMLBeOlvas() {
+        /**
+         * Töröljük az arfolyam Map-ot.
+         */
         arfolyamok.clear();
+        /**
+         * Töröljük a legördülő dobozka tartalmát.
+         */
         jComboBox1.removeAllItems();
+        /**
+         * Kiürítjük a mennyi valutát szeretne váltani szöveg mezőt.
+         */
         mennyitValt.setText("");
+        /**
+         * Kiürítjük a forintban kiszámolt valuta értékét tartalmazó szöveg mezőt.
+         */
         osszegFt.setText("");
  
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
+        /**
+         * Megpróbáljuk beolvasni az URLcim-ről az XML állományt.
+         */
         try {
             dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             DocumentBuilder db = dbf.newDocumentBuilder();
      
-           new CertificateValidator();
+            /**
+             * Meghívjük a CertificateValidator-t, hogy a MÁK-ban a tűzfal mögött is működjön az alkalmazás.
+             */
+            new CertificateValidator();
 
             Document doc = db.parse(new URL(URLcim).openStream());
 
@@ -97,26 +114,36 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
             NodeList nodeList = doc.getElementsByTagName("Cube");
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Element elem = (Element) nodeList.item(i);
+                /**
+                 * Az XML-ben a "currency" tag-ban lévő szöveget, és a "rate" tag-ban lévő értéket
+                 * letároljuk az arfolyamok Map-ba.
+                 */
                 if (elem.getAttribute("currency") != null && !elem.getAttribute("currency").isEmpty()) {
                     arfolyamok.put(elem.getAttribute("currency"), Double.valueOf(elem.getAttribute("rate")));
                 }
             }
-/**
- * Betöltjük az arfolyamok Map-ból az XML-ből beolvasott devizanemeket a legördülő dobozkába.
- */
+        /**
+         * Betöltjük az arfolyamok Map-ból az XML-ből beolvasott devizanemeket a legördülő dobozkába.
+        */
         arfolyamok.keySet().forEach(key -> {
         jComboBox1.addItem(key);
             });
-/**
- * Lekezeljük a kivételeket.
- */
+        /**
+        * Lekezeljük a kivételeket.
+        */
         } catch (ParserConfigurationException | SAXException | IOException e) {
             java.util.logging.Logger.getLogger(DevizaValto10pt.class.getName()).log(java.util.logging.Level.SEVERE, null, e);
         }
-
+        /**
+         * Amennyiben sikerült feltölteni az arfolyamok Map-ot, akkor engedélyezzük a valutaváltás elvégzéséhez tartozó elemeket.
+         */
         if (!arfolyamok.isEmpty()) {
             EnableItems(true);
         }
+        /**
+         * Amennyiben nem sikerült feltölteni az arfolyamok Map-ot, akkor hibajelzést küldünk a felhasználónak,
+         * és letiltjuk a valutaváltás elvégzéséhez tartozó elemeket.
+         */
         else {
             System.out.println("Hiba történt a betöltéskor! Próbálja újra.");
             EnableItems(false);
@@ -143,6 +170,7 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Devizaváltó Alkalmazás 1.0 (c) Plósz Tamás");
+        setResizable(false);
 
         jTextField1.setEditable(false);
         jTextField1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -200,12 +228,9 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonValtas)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 357, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 357, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
@@ -252,6 +277,9 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
  * Amennyiben nem adott meg váltando összeget, akkor nem számolunk.
  */
         if ( !mennyitValt.getText().isEmpty() ) {
+            /**
+             * Kiszámoljuk a váltandó valuta összegét forintban és megjelenítjük.
+             */
             ennyiFt = (Integer.valueOf(mennyitValt.getText()) / arfolyamok.get(jComboBox1.getSelectedItem()).doubleValue() ) * arfolyamok.get("HUF");
             osszegFt.setText(df.format(ennyiFt).toString());
         }
@@ -259,9 +287,9 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-/**
- * A felhasználó megnyomta az "XML betöltés" gombot, ezért beolvassuk az URL címről az XML állományt.
- */
+        /**
+        * A felhasználó megnyomta az "XML betöltés" gombot, ezért beolvassuk az URL címről az XML állományt.
+        */
         XMLBeOlvas();
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -300,8 +328,6 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
         });
 
     }
-
-
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
