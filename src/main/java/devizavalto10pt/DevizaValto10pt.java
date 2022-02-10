@@ -2,6 +2,7 @@ package devizavalto10pt;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
@@ -28,7 +29,7 @@ import org.xml.sax.SAXException;
  * majd a "Váltás" nyomógombbal kiszámoljuk és megjelenítjuk a forintba átváltott összeget.
  */
 public class DevizaValto10pt extends javax.swing.JFrame implements ActionListener {
-    private static final String URLcim = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
+    private static final String URL = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
     private static final DecimalFormat df = new DecimalFormat("0.00");
     Map<String, Double> arfolyamok = new HashMap<String, Double>();
 
@@ -43,11 +44,11 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
 /**
  * Letiltjuk a mezőket.
  */
-        EnableItems(false);
+        enableItems(false);
 /**
  * Beleírjuk az URL címet a mezőbe.
  */
-        jTextField1.setText(URLcim);
+        jTextField1.setText(URL);
 /**
  * A mennyi valutát szeretne váltani mezőhöz adunk egy olyan listenert-t, amely csak számokat fogad el.
  */
@@ -64,7 +65,7 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
 /**
  * Engedélyezzük / letiltjuk a mezőket.
  */
-    public void EnableItems(boolean milegyen) {
+    public void enableItems(boolean milegyen) {
         jComboBox1.setEnabled(milegyen);
         mennyitValt.setEnabled(milegyen);
         jButtonValtas.setEnabled(milegyen);
@@ -75,7 +76,7 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
     * Letároljuk az XML-ből beolvasott devizanemeket és árfolyamokat a arfolyamok Map-ba, valamint feltöltjük a legördülő
     * dobozkába a devizanemeket, hogy majd azokból választhasson a felhasználó.
     */
-    public void XMLBeOlvas() {
+    public void xmlBeOlvas() {
         /**
          * Töröljük az arfolyam Map-ot.
          */
@@ -107,7 +108,7 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
              */
             new CertificateValidator();
 
-            Document doc = db.parse(new URL(URLcim).openStream());
+            Document doc = db.parse(new URL(URL).openStream());
 
             doc.getDocumentElement().normalize();
 
@@ -138,7 +139,7 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
          * Amennyiben sikerült feltölteni az arfolyamok Map-ot, akkor engedélyezzük a valutaváltás elvégzéséhez tartozó elemeket.
          */
         if (!arfolyamok.isEmpty()) {
-            EnableItems(true);
+            enableItems(true);
         }
         /**
          * Amennyiben nem sikerült feltölteni az arfolyamok Map-ot, akkor hibajelzést küldünk a felhasználónak,
@@ -146,9 +147,22 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
          */
         else {
             System.out.println("Hiba történt a betöltéskor! Próbálja újra.");
-            EnableItems(false);
+            enableItems(false);
         }
      }
+    private void osszegKiszamol() {
+        Double ennyiFt;
+/**
+ * Amennyiben nem adott meg váltando összeget, akkor nem számolunk.
+ */
+        if ( !mennyitValt.getText().isEmpty() ) {
+            /**
+             * Kiszámoljuk a váltandó valuta összegét forintban és megjelenítjük.
+             */
+            ennyiFt = (Integer.valueOf(mennyitValt.getText()) / arfolyamok.get(jComboBox1.getSelectedItem()).doubleValue() ) * arfolyamok.get("HUF");
+            osszegFt.setText(df.format(ennyiFt).toString());
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -194,6 +208,11 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
         jComboBox1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jComboBox1.setToolTipText("Válassza ki a devizanemet.");
         jComboBox1.setEnabled(false);
+        jComboBox1.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBox1ItemStateChanged(evt);
+            }
+        });
 
         jButtonValtas.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jButtonValtas.setText("Váltás");
@@ -213,7 +232,7 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
         jLabel2.setText("Ft");
 
         jLabel3.setFont(new java.awt.Font("Times New Roman", 1, 36)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 0, 102));
+        jLabel3.setForeground(new java.awt.Color(255, 0, 51));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("Devizaváltó Alkalmazás 1.0");
 
@@ -277,17 +296,7 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
 
     private void jButtonValtasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonValtasActionPerformed
         // TODO add your handling code here:
-        Double ennyiFt;
-/**
- * Amennyiben nem adott meg váltando összeget, akkor nem számolunk.
- */
-        if ( !mennyitValt.getText().isEmpty() ) {
-            /**
-             * Kiszámoljuk a váltandó valuta összegét forintban és megjelenítjük.
-             */
-            ennyiFt = (Integer.valueOf(mennyitValt.getText()) / arfolyamok.get(jComboBox1.getSelectedItem()).doubleValue() ) * arfolyamok.get("HUF");
-            osszegFt.setText(df.format(ennyiFt).toString());
-        }
+        osszegKiszamol();
     }//GEN-LAST:event_jButtonValtasActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -295,8 +304,19 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
         /**
         * A felhasználó megnyomta az "XML betöltés" gombot, ezért beolvassuk az URL címről az XML állományt.
         */
-        XMLBeOlvas();
+        xmlBeOlvas();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox1ItemStateChanged
+        /**
+        * Amennyiben más devizát választott a felhasználó újra kiszámoljuk az összeget.
+        */
+        if(evt.getStateChange() == ItemEvent.SELECTED)
+        {
+            osszegKiszamol();
+        }
+    // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox1ItemStateChanged
 
     /**
      * @param args the command line arguments
