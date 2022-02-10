@@ -17,9 +17,9 @@ import javax.net.ssl.X509TrustManager;
  */
     
     
-        public class CertificatValidator {
+        public class CertificateValidator {
 
-    public CertificatValidator() {
+    public CertificateValidator() {
 
             TrustManager[] trustAllCerts = new TrustManager[]{
                 new X509TrustManager() {

@@ -85,7 +85,7 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
             dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             DocumentBuilder db = dbf.newDocumentBuilder();
      
-           new CertificatValidator();
+           new CertificateValidator();
 
             Document doc = db.parse(new URL(URLcim).openStream());
 
