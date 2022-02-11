@@ -21,11 +21,11 @@ import org.xml.sax.SAXException;
 
 /**
  *
- * @author Plósz Tamás
+ * @author Plósz Tamás.
  * 
  * Az alkalmazás gombnyomásra betölti a https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml helyen
  * található XML állományban lévő devizákat és annak aktuális árfolyamát.
- * A felhasználó kiválaszthatja, hogy milyen devizát szeretne váltani, valamint a véáltani kívánt mennyiséget,
+ * A felhasználó kiválaszthatja, hogy milyen devizát szeretne váltani, valamint a váltani kívánt mennyiséget,
  * majd a "Váltás" nyomógombbal kiszámoljuk és megjelenítjuk a forintba átváltott összeget.
  */
 public class DevizaValto10pt extends javax.swing.JFrame implements ActionListener {
@@ -61,7 +61,6 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
         });
     }
 
-
 /**
  * Engedélyezzük / letiltjuk a mezőket.
  */
@@ -73,7 +72,7 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
         }
    /**
     * Beolvassuk az XML-t erről az URL címről: https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml.
-    * Letároljuk az XML-ből beolvasott devizanemeket és árfolyamokat a arfolyamok Map-ba, valamint feltöltjük a legördülő
+    * Letároljuk az XML-ből beolvasott devizanemeket és árfolyamokat az arfolyamok Map-ba, valamint feltöltjük a legördülő
     * dobozkába a devizanemeket, hogy majd azokból választhasson a felhasználó.
     */
     public void xmlBeOlvas() {
@@ -232,7 +231,7 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
         jLabel2.setText("Ft");
 
         jLabel3.setFont(new java.awt.Font("Times New Roman", 1, 36)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 0, 51));
+        jLabel3.setForeground(new java.awt.Color(255, 0, 0));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("Devizaváltó Alkalmazás 1.0");
 
@@ -351,7 +350,6 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
                 new DevizaValto10pt().setVisible(true);
             }
         });
-
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
