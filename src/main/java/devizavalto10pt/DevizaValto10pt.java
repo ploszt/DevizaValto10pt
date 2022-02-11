@@ -49,9 +49,9 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
  * Beleírjuk az URL címet a mezőbe.
  */
         jTextField1.setText(URL);
-/**
- * A mennyi valutát szeretne váltani mezőhöz adunk egy olyan listenert-t, amely csak számokat fogad el.
- */
+        /**
+        * A mennyi valutát szeretne váltani mezőhöz adunk egy olyan listenert-t, amely csak számokat fogad el.
+        */
         mennyitValt.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent evt) {
                 if (!Character.isDigit(evt.getKeyChar())) {
@@ -61,16 +61,16 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
         });
     }
 
-/**
- * Engedélyezzük / letiltjuk a mezőket.
- */
+    /**
+    * Engedélyezzük / letiltjuk a mezőket.
+    */
     public void enableItems(boolean milegyen) {
         jComboBox1.setEnabled(milegyen);
         mennyitValt.setEnabled(milegyen);
         jButtonValtas.setEnabled(milegyen);
         osszegFt.setEnabled(milegyen);
         }
-   /**
+    /**
     * Beolvassuk az XML-t erről az URL címről: https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml.
     * Letároljuk az XML-ből beolvasott devizanemeket és árfolyamokat az arfolyamok Map-ba, valamint feltöltjük a legördülő
     * dobozkába a devizanemeket, hogy majd azokból választhasson a felhasználó.
@@ -149,13 +149,17 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
             enableItems(false);
         }
      }
+ 
+    /**
+     * Kiszámoljuk a megadott adatok alapján a váltandó valuta összegét forintban.
+     */
     private void osszegKiszamol() {
         Double ennyiFt;
 
         try {
- /**
- * Amennyiben nem adott meg váltando összeget, akkor nem számolunk.
- */
+        /**
+        * Amennyiben adott meg váltando összeget, akkor kiszámoljuk az összeget.
+        */
         if ( !mennyitValt.getText().isEmpty() ) {
             /**
              * Kiszámoljuk a váltandó valuta összegét forintban és megjelenítjük.
@@ -299,12 +303,13 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonValtasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonValtasActionPerformed
-        // TODO add your handling code here:
+        /**
+         * Amennyiben megnyomta a felhasználó a "Váltás" gombot, meghívjuk a váltandó valuta összegét kiszámoló metódust.
+         */
         osszegKiszamol();
     }//GEN-LAST:event_jButtonValtasActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
         /**
         * A felhasználó megnyomta az "XML betöltés" gombot, ezért beolvassuk az URL címről az XML állományt.
         */
