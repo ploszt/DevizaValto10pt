@@ -151,7 +151,9 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
      }
     private void osszegKiszamol() {
         Double ennyiFt;
-/**
+
+        try {
+ /**
  * Amennyiben nem adott meg váltando összeget, akkor nem számolunk.
  */
         if ( !mennyitValt.getText().isEmpty() ) {
@@ -160,6 +162,9 @@ public class DevizaValto10pt extends javax.swing.JFrame implements ActionListene
              */
             ennyiFt = (Integer.valueOf(mennyitValt.getText()) / arfolyamok.get(jComboBox1.getSelectedItem()).doubleValue() ) * arfolyamok.get("HUF");
             osszegFt.setText(df.format(ennyiFt).toString());
+        }
+        } catch (NumberFormatException | ArithmeticException e) {
+            java.util.logging.Logger.getLogger(DevizaValto10pt.class.getName()).log(java.util.logging.Level.SEVERE, null, e);
         }
     }
     /**
